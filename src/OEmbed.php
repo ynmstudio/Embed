@@ -27,6 +27,9 @@ class OEmbed
     {
         $queryParameters = ['url' => $url, 'format' => 'json'];
 
+        $host = parse_url($url, \PHP_URL_HOST);
+        if (strpos($host, 'issuu.com') !== false) $queryParameters['iframe'] = 'true';
+
         return array_merge($queryParameters, $this->extractor->getSetting('oembed:query_parameters') ?? []);
     }
 
@@ -66,6 +69,7 @@ class OEmbed
         // Add configured OEmbed query parameters
         parse_str($endpoint->getQuery(), $query);
         $query = array_merge($query, $this->extractor->getSetting('oembed:query_parameters') ?? []);
+        if (strpos($endpoint->getHost(), 'issuu.com') !== false) $query['iframe'] = 'true';
         $endpoint = $endpoint->withQuery(http_build_query($query));
 
         return $endpoint;
